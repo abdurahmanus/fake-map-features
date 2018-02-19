@@ -13,7 +13,7 @@ const AppUsers = styled(Users)`
 
 const AppMap = styled(OlMap)`
   flex-grow: 1;
-`
+`;
 
 class App extends Component {
   componentDidMount() {
@@ -24,7 +24,11 @@ class App extends Component {
     const { className, users, features, selectedUser, selectUser } = this.props;
     return (
       <div className={className}>
-        <AppUsers users={users} selectedUser={selectedUser} onSelectUser={selectUser} />
+        <AppUsers
+          users={users}
+          selectedUser={selectedUser}
+          onSelectUser={selectUser}
+        />
         <AppMap features={features} selected={selectedUser} />
       </div>
     );
@@ -36,19 +40,12 @@ const AppStyled = styled(App)`
   height: 100vh;
 `;
 
-const getUsers = features => (features ? features.map(f => ({
-  id: f.properties.id,
-  userName: f.properties.userName,
-  avatar: f.properties.avatar,
-  email: f.properties.email
-})) : []);
-
 const AppContainer = connect(
   state => ({
     isLoading: state.isLoading,
     features: state.features,
     selectedUser: state.selectedUser,
-    users: getUsers(state.features.features)
+    users: state.users
   }),
   { fetchFeatures, selectUser }
 )(AppStyled);
