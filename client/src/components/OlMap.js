@@ -10,8 +10,8 @@ import VectorSource from "ol/source/vector";
 import GeoJSON from "ol/format/geojson";
 import Overlay from "ol/overlay";
 import MapPopup from "./MapPopup";
-import Email from "./Email";
 import featureStyle from "./featureStyle";
+import UserInfo from "./UserInfo";
 import "ol/ol.css";
 
 function getFeatureCoordinates(feature) {
@@ -28,10 +28,7 @@ function zoomMapToFeature(map, feature) {
 
 const OlContainer = styled.div`
   height: 100%;
-`;
-
-const UserName = styled.div`
-  font-family: Arial, Helvetica, sans-serif;
+  background: #aad3df;
 `;
 
 class OlMap extends Component {
@@ -126,17 +123,14 @@ class OlMap extends Component {
 
   render() {
     const { className } = this.props;
-    const selectedInfo = this.state.selectedInfo && (
-      <div>
-        <UserName>{this.state.selectedInfo.userName}</UserName>
-        <Email email={this.state.selectedInfo.email} />
-      </div>
-    );
+    const { selectedInfo } = this.state;
     return (
       <div className={className}>
         <OlContainer ref={el => (this.mapRef = el)} />
         <MapPopup ref={el => (this.overlayRef = el)} onClose={this.hideOverlay}>
-          {selectedInfo}
+          {selectedInfo && (
+            <UserInfo user={selectedInfo} />
+          )}
         </MapPopup>
       </div>
     );
