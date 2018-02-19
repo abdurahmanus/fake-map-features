@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { findDOMNode } from "react-dom";
+import styled from "styled-components";
 import Map from "ol/map";
 import View from "ol/view";
 import TileLayer from "ol/layer/tile";
@@ -39,10 +40,22 @@ const featureStyle = (function() {
       });
     }
     return styleCache[color];
-  }
+  };
 })();
 
+const OlContainer = styled.div`
+  height: 100%;
+`;
+
 class OlMap extends Component {
+  constructor(props) {
+    super(props);
+    this.hideOverlay = this.hideOverlay.bind(this);
+    this.state = {
+      selectedInfo: null
+    };
+  }
+
   componentDidMount() {
     const osmLayer = new TileLayer({
       source: new OSMSource()
@@ -51,12 +64,13 @@ class OlMap extends Component {
     this.vectorSource = new VectorSource();
 
     const vectorLayer = new VectorLayer({
+      name: "FeaturesLayer",
       source: this.vectorSource,
       style: featureStyle
     });
 
     this.overlay = new Overlay({
-      element: findDOMNode(this.popupRef),
+      element: findDOMNode(this.overlayRef),
       autoPan: true,
       autoPanAnimation: {
         duration: 250
@@ -64,7 +78,7 @@ class OlMap extends Component {
     });
 
     this.map = new Map({
-      target: this.el,
+      target: findDOMNode(this.mapRef),
       layers: [osmLayer, vectorLayer],
       view: new View({
         center: [0, 0],
@@ -73,12 +87,12 @@ class OlMap extends Component {
       overlays: [this.overlay]
     });
 
-    this.map.on("singleclick", (evt) => {
+    this.map.on("singleclick", evt => {
       if (!this.map.hasFeatureAtPixel(evt.pixel)) {
         return;
       }
       const feature = this.map.getFeaturesAtPixel(evt.pixel)[0];
-      this.overlay.setPosition(getFeatureCoordinates(feature));
+      this.showOverlay(feature);
     });
   }
 
@@ -89,21 +103,43 @@ class OlMap extends Component {
       }).readFeatures(nextProps.features);
       this.vectorSource.addFeatures(features);
     }
-    if (nextProps.selected) {
+    if (nextProps.selected !== undefined) {
       const feature = this.vectorSource.getFeatureById(nextProps.selected);
       if (feature) {
         zoomMapToFeature(this.map, feature);
-        this.overlay.setPosition(getFeatureCoordinates(feature));
+        this.showOverlay(feature);
       }
     }
   }
 
+  showOverlay(feature) {
+    this.overlay.setPosition(getFeatureCoordinates(feature));
+    this.setState(() => ({
+      selectedInfo: {
+        userName: feature.get("userName"),
+        email: feature.get("email")
+      }
+    }));
+  }
+
+  hideOverlay() {
+    this.overlay.setPosition(undefined);
+  }
+
   render() {
     const { className } = this.props;
+    const selectedInfo = this.state.selectedInfo && (
+      <div>
+        <div>{this.state.selectedInfo.userName}</div>
+        <div>{this.state.selectedInfo.email}</div>
+      </div>
+    );
     return (
       <div className={className}>
-        <div style={{ height: "100%" }} ref={el => (this.el = el)} />
-        <MapPopup ref={el => (this.popupRef = el)} text="Hello, world"/>
+        <OlContainer ref={el => (this.mapRef = el)} />
+        <MapPopup ref={el => (this.overlayRef = el)} onClose={this.hideOverlay}>
+          {selectedInfo}
+        </MapPopup>
       </div>
     );
   }

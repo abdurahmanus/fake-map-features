@@ -15,7 +15,7 @@ const rootReducer = (state = {
           isLoading: false,
           features: action.features
       }
-    case SELECT_USER: 
+    case SELECT_USER:
       return {
         ...state,
         selectedUser: action.id
