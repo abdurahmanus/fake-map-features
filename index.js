@@ -15,6 +15,6 @@ router.render = function (req, res) {
 server.use(middlewares);
 server.use(router);
 
-server.listen(3001, function () {
-  console.log('Server is running on 3001 port');
+server.listen(3000, function () {
+  console.log('Server is running on 3000 port');
 });
