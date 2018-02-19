@@ -14,6 +14,34 @@ import Overlay from "ol/overlay";
 import MapPopup from "./MapPopup";
 import "ol/ol.css";
 
+function getFeatureCoordinates(feature) {
+  const geometry = feature.getGeometry();
+  return geometry.getCoordinates();
+}
+
+function zoomMapToFeature(map, feature) {
+  map.getView().animate({
+    zoom: 10,
+    center: getFeatureCoordinates(feature)
+  });
+}
+
+const featureStyle = (function() {
+  const styleCache = Object.create(null);
+  return function(feature) {
+    const color = feature.get("color");
+    if (!styleCache[color]) {
+      styleCache[color] = new Style({
+        image: new Circle({
+          radius: 5,
+          fill: new Fill({ color })
+        })
+      });
+    }
+    return styleCache[color];
+  }
+})();
+
 class OlMap extends Component {
   componentDidMount() {
     const osmLayer = new TileLayer({
@@ -24,17 +52,10 @@ class OlMap extends Component {
 
     const vectorLayer = new VectorLayer({
       source: this.vectorSource,
-      style(feature) {
-        return new Style({
-          image: new Circle({
-            radius: 5,
-            fill: new Fill({ color: feature.get("color") })
-          })
-        });
-      }
+      style: featureStyle
     });
 
-    const overlay = new Overlay({
+    this.overlay = new Overlay({
       element: findDOMNode(this.popupRef),
       autoPan: true,
       autoPanAnimation: {
@@ -42,25 +63,22 @@ class OlMap extends Component {
       }
     });
 
-
-    const map = new Map({
+    this.map = new Map({
       target: this.el,
       layers: [osmLayer, vectorLayer],
       view: new View({
         center: [0, 0],
         zoom: 4
       }),
-      overlays: [overlay]
+      overlays: [this.overlay]
     });
 
-    map.on("singleclick", function(evt) {
-      if (!map.hasFeatureAtPixel(evt.pixel)) {
+    this.map.on("singleclick", (evt) => {
+      if (!this.map.hasFeatureAtPixel(evt.pixel)) {
         return;
       }
-      const feature = map.getFeaturesAtPixel(evt.pixel)[0];
-      const geometry = feature.getGeometry();
-      const coordinates = geometry.getCoordinates();
-      overlay.setPosition(coordinates);
+      const feature = this.map.getFeaturesAtPixel(evt.pixel)[0];
+      this.overlay.setPosition(getFeatureCoordinates(feature));
     });
   }
 
@@ -70,6 +88,13 @@ class OlMap extends Component {
         featureProjection: "EPSG:3857"
       }).readFeatures(nextProps.features);
       this.vectorSource.addFeatures(features);
+    }
+    if (nextProps.selected) {
+      const feature = this.vectorSource.getFeatureById(nextProps.selected);
+      if (feature) {
+        zoomMapToFeature(this.map, feature);
+        this.overlay.setPosition(getFeatureCoordinates(feature));
+      }
     }
   }
 

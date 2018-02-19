@@ -25,7 +25,7 @@ class App extends Component {
     return (
       <div className={className}>
         <AppUsers users={users} selectedUser={selectedUser} onSelectUser={selectUser} />
-        <AppMap features={features} />
+        <AppMap features={features} selected={selectedUser} />
       </div>
     );
   }

@@ -7,18 +7,21 @@ const Avatar = styled.img`
 
 const User = ({ className, user, onClick }) => {
   return (
-    <div className={className} onClick={onClick}>
+    <button className={className} onClick={onClick}>
       <Avatar height="50" src={user.avatar} alt="" /> {user.userName}{" "}
       {user.email}
-    </div>
+    </button>
   );
 };
 
 const StyledUser = styled(User)`
+  border: none;
+  display: block;
+  text-align: left;
   background: ${props => (props.selected ? "red" : "green")};
   cursor: pointer;
   &:hover {
-    background: blue;
+    background: red;
   }
 `;
 
