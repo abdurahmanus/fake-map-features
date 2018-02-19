@@ -32,7 +32,6 @@ class App extends Component {
 }
 
 const AppStyled = styled(App)`
-  background: lightgray;
   display: flex;
   height: 100vh;
 `;

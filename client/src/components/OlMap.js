@@ -8,11 +8,10 @@ import VectorLayer from "ol/layer/vector";
 import OSMSource from "ol/source/osm";
 import VectorSource from "ol/source/vector";
 import GeoJSON from "ol/format/geojson";
-import Style from "ol/style/style";
-import Fill from "ol/style/fill";
-import Circle from "ol/style/circle";
 import Overlay from "ol/overlay";
 import MapPopup from "./MapPopup";
+import Email from "./Email";
+import featureStyle from "./featureStyle";
 import "ol/ol.css";
 
 function getFeatureCoordinates(feature) {
@@ -27,24 +26,12 @@ function zoomMapToFeature(map, feature) {
   });
 }
 
-const featureStyle = (function() {
-  const styleCache = Object.create(null);
-  return function(feature) {
-    const color = feature.get("color");
-    if (!styleCache[color]) {
-      styleCache[color] = new Style({
-        image: new Circle({
-          radius: 5,
-          fill: new Fill({ color })
-        })
-      });
-    }
-    return styleCache[color];
-  };
-})();
-
 const OlContainer = styled.div`
   height: 100%;
+`;
+
+const UserName = styled.div`
+  font-family: Arial, Helvetica, sans-serif;
 `;
 
 class OlMap extends Component {
@@ -66,7 +53,7 @@ class OlMap extends Component {
     const vectorLayer = new VectorLayer({
       name: "FeaturesLayer",
       source: this.vectorSource,
-      style: featureStyle
+      style: feature => featureStyle(feature, this.props.selected)
     });
 
     this.overlay = new Overlay({
@@ -77,8 +64,10 @@ class OlMap extends Component {
       }
     });
 
+    const target = findDOMNode(this.mapRef);
+
     this.map = new Map({
-      target: findDOMNode(this.mapRef),
+      target,
       layers: [osmLayer, vectorLayer],
       view: new View({
         center: [0, 0],
@@ -93,6 +82,15 @@ class OlMap extends Component {
       }
       const feature = this.map.getFeaturesAtPixel(evt.pixel)[0];
       this.showOverlay(feature);
+    });
+
+    this.map.on("pointermove", evt => {
+      if (evt.dragging) {
+        return;
+      }
+      target.style.cursor = this.map.hasFeatureAtPixel(evt.pixel)
+        ? "pointer"
+        : "";
     });
   }
 
@@ -130,8 +128,8 @@ class OlMap extends Component {
     const { className } = this.props;
     const selectedInfo = this.state.selectedInfo && (
       <div>
-        <div>{this.state.selectedInfo.userName}</div>
-        <div>{this.state.selectedInfo.email}</div>
+        <UserName>{this.state.selectedInfo.userName}</UserName>
+        <Email email={this.state.selectedInfo.email} />
       </div>
     );
     return (

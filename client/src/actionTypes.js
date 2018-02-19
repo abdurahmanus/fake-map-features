@@ -1,0 +1,3 @@
+export const FETCH_FEATURES = "FETCH_FEATURES";
+export const FEATURES_RESULT = "FEATURES_RESULT";
+export const SELECT_USER = "SELECT_USER";

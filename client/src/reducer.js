@@ -1,4 +1,4 @@
-import { FETCH_FEATURES, FEATURES_RESULT, SELECT_USER } from "./actions";
+import { FETCH_FEATURES, FEATURES_RESULT, SELECT_USER } from "./actionTypes";
 
 const rootReducer = (state = {
     features: {}
