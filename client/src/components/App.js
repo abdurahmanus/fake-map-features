@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { fetchFeatures, selectUser } from "../actions";
@@ -8,6 +8,7 @@ import OlMap from "./OlMap";
 const AppUsers = styled(Users)`
   overflow-y: auto;
   width: 300px;
+  min-width: 300px;
   margin: 0;
 `;
 
@@ -15,7 +16,7 @@ const AppMap = styled(OlMap)`
   flex-grow: 1;
 `;
 
-class App extends Component {
+class App extends PureComponent {
   componentDidMount() {
     this.props.fetchFeatures();
   }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PureComponent } from "react";
 import styled from "styled-components";
 import Email from "./Email";
 
@@ -15,17 +15,29 @@ const Name = styled.span`
   font-family: Arial, Helvetica, sans-serif;
 `;
 
-const User = ({ className, user, onClick }) => {
-  return (
-    <button className={className} onClick={onClick}>
-      <div>
-        <Avatar height="50" width="50" src={user.avatar} alt="User avatar" />
-        <Name>{user.userName}</Name>
-      </div>
-      <Email email={user.email}></Email>
-    </button>
-  );
-};
+class User extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.props.onClick(this.props.user.id);
+  }
+
+  render() {
+    const { className, user } = this.props;
+    return (
+      <button className={className} onClick={this.handleClick}>
+        <div>
+          <Avatar height="50" width="50" src={user.avatar} alt="User avatar" />
+          <Name>{user.userName}</Name>
+        </div>
+        <Email email={user.email} />
+      </button>
+    );
+  }
+}
 
 const StyledUser = styled(User)`
   border: none;
