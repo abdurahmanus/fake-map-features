@@ -42,6 +42,7 @@ class OlMap extends Component {
 
   componentDidMount() {
     const osmLayer = new TileLayer({
+      preload: Infinity,
       source: new OSMSource()
     });
 
@@ -93,6 +94,7 @@ class OlMap extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.features && nextProps.features.type === "FeatureCollection") {
+      this.vectorSource.clear();
       const features = new GeoJSON({
         featureProjection: "EPSG:3857"
       }).readFeatures(nextProps.features);

@@ -1,18 +1,25 @@
-import React from "react";
+import React, { PureComponent } from "react";
 import styled from "styled-components";
 import User from "./User";
 
-const Users = ({ className, users, selectedUser, onSelectUser }) => {
-  return (
-    <ul className={className}>
-      {users.map(user => (
-        <li key={user.id}>
-          <User user={user} selected={selectedUser === user.id} onClick={() => onSelectUser(user.id)} />
-        </li>
-      ))}
-    </ul>
-  );
-};
+class Users extends PureComponent {
+  render() {
+    const { className, users, selectedUser, onSelectUser } = this.props;
+    return (
+      <ul className={className}>
+        {users.map(user => (
+          <li key={user.id}>
+            <User
+              user={user}
+              selected={selectedUser === user.id}
+              onClick={onSelectUser}
+            />
+          </li>
+        ))}
+      </ul>
+    );
+  }
+}
 
 const StyledUsers = styled(Users)`
   list-style: none;
