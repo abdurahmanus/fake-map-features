@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import Email from "./Email";
+import styles from "./styles";
 
 const UserName = styled.div`
-  font-family: Arial, Helvetica, sans-serif;
+  ${styles.fonts};
 `;
 
 const UserInfo = ({ className, user }) => (

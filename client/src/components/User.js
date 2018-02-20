@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Email from "./Email";
+import styles from "./styles";
 
 const Avatar = styled.img`
   border-radius: 100%;
@@ -9,10 +10,10 @@ const Avatar = styled.img`
 `;
 
 const Name = styled.span`
+  ${styles.fonts}
   line-height: 50px;
   vertical-align: middle;
   font-size: 20px;
-  font-family: Arial, Helvetica, sans-serif;
 `;
 
 const User = ({ className, user, onClick }) => {
