@@ -5,7 +5,7 @@ import Map from "ol/map";
 import View from "ol/view";
 import TileLayer from "ol/layer/tile";
 import VectorLayer from "ol/layer/vector";
-import OSMSource from "ol/source/osm";
+import Stamen from "ol/source/stamen";
 import VectorSource from "ol/source/vector";
 import GeoJSON from "ol/format/geojson";
 import Overlay from "ol/overlay";
@@ -41,9 +41,11 @@ class OlMap extends Component {
   }
 
   componentDidMount() {
-    const osmLayer = new TileLayer({
+    const tileLayer = new TileLayer({
       preload: Infinity,
-      source: new OSMSource()
+      source: new Stamen({
+        layer: 'watercolor'
+      })
     });
 
     this.vectorSource = new VectorSource();
@@ -66,7 +68,7 @@ class OlMap extends Component {
 
     this.map = new Map({
       target,
-      layers: [osmLayer, vectorLayer],
+      layers: [tileLayer, vectorLayer],
       view: new View({
         center: [0, 0],
         zoom: 4
